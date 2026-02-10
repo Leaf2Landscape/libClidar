@@ -1,0 +1,36 @@
+# Makefile for iter_thresh
+#
+HOME = /home/hancocks
+LIBS = -lm -ltiff -lgeotiff -lscanifc-mt
+RIEGLDIR=${HOME}/src/downloaded/rivlib/rivlib-2_5_4-x86_64-linux-gcc44/include/riegl
+INCLS = -I/usr/local/include -I${HOME}/src/headers -I/usr/include/geotiff -I${RIEGLDIR}
+LIBDIRS=-L${HOME}/src/downloaded/rivlib/rivlib-2_5_4-x86_64-linux-gcc44/ib
+CFLAGS += -Wall
+#CFLAGS += -g
+CFLAGS += -O3
+LOCAL_OTHERS =  # lasRead.o tiffWrite.o voxFunc.o
+
+
+CC = gcc
+#CC= /opt/SUNWspro/bin/cc
+
+#CFLAGS += -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+
+THIS=rieglTest
+
+$(THIS):	$(THIS).o $(LOCAL_OTHERS)
+		$(CC) $(CFLAGS) $@.o $(LOCAL_OTHERS) $(LIBDIRS) -o $@ $(LIBS) $(CFLAGS) $(INCLS)
+
+.c.o:		$<
+		$(CC) $(CFLAGS) -I. $(INCLS) -D$(ARCH)  -c $<
+
+clean:
+		\rm -f *% *~ *.o #$(TOOLDIR)/*.o
+
+install:
+		touch $(HOME)/bin/$(ARCH)/$(THIS)
+		mv $(HOME)/bin/$(ARCH)/$(THIS) $(HOME)/bin/$(ARCH)/$(THIS).old
+		cp $(THIS) $(HOME)/bin/$(ARCH)/$(THIS)
+
+
+			

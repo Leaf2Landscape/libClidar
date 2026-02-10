@@ -1,0 +1,45 @@
+# Build outputs
+bin/
+*.o
+*.a
+*.so
+rxptobinary/build/
+
+# Compiled executables (built by make/cmake)
+gedisimulator/addNoiseHDF
+gedisimulator/collocateWaves
+gedisimulator/fitTXpulse
+gedisimulator/gediMetric
+gedisimulator/gediRat
+gedisimulator/lasPoints
+gedisimulator/lgw2hdf
+gedisimulator/mapLidar
+salcamake/hedgehog
+salcamake/cal_salca/salcaCal
+salcamake/tiffSALCA/tiffSALCA
+voxelate/dumpTLScloud
+voxelate/dumpTiffAscii
+voxelate/testDenoiseGauss
+voxelate/voxDecimate
+voxelate/voxelTLS
+voxelate/voxelate
+
+# Test data (large binary scan files)
+test_data/
+
+# Riegl proprietary libraries
+riegl_libs/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Claude Code
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db

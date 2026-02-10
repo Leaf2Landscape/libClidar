@@ -1,0 +1,45 @@
+{
+  "name": "libClidar",
+  "build": {
+    "context": "..",
+    "dockerfile": "Dockerfile"
+  },
+  "workspaceFolder": "/workspaces/libClidar",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/libClidar,type=bind,consistency=cached",
+  "postCreateCommand": "bash .devcontainer/build-all.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cpptools",
+        "ms-vscode.cmake-tools",
+        "ms-python.python"
+      ],
+      "settings": {
+        "C_Cpp.default.includePath": [
+          "${workspaceFolder}/libclidar",
+          "${workspaceFolder}/gedisimulator",
+          "${workspaceFolder}/voxelate",
+          "${workspaceFolder}/voxel_lidar",
+          "/opt/tools",
+          "/opt/cmpfit",
+          "/opt/rivlib/rivlib-2_6_0-x86_64-linux-gcc11/include",
+          "/opt/rdblib/include",
+          "/usr/include/gdal",
+          "/usr/include/geotiff",
+          "/usr/include/libgeotiff"
+        ]
+      }
+    }
+  },
+  "remoteEnv": {
+    "ARCH": "x86_64",
+    "HANCOCKTOOLS_ROOT": "/opt/tools",
+    "CMPFIT_ROOT": "/opt/cmpfit",
+    "LIBCLIDAR_ROOT": "/workspaces/libClidar/libclidar",
+    "VOXELATE_ROOT": "/workspaces/libClidar/voxelate",
+    "GEDIRAT_ROOT": "/workspaces/libClidar/gedisimulator",
+    "GSL_ROOT": "/usr/lib64",
+    "HDF5_LIB": "/usr",
+    "RiVLib_DIR": "/opt/rivlib/rivlib-2_6_0-x86_64-linux-gcc11"
+  }
+}
