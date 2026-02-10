@@ -30,7 +30,8 @@ COLS_DICT = {
     12: "volTrans0",
     13: "PAIrad0",
     14: "meanRefl0",
-    15: "meanZen0"
+    15: "meanZen0",
+    16: "meanRange0"
 }
 COLS_SEL = {
     "x": "x",
@@ -49,7 +50,7 @@ USECOLS = {key: COLS_SEL[value] for (key, value) in COLS_DICT.items()
 USECOLS_NAMES = list(USECOLS.values())
 COLS_IND = {USECOLS_NAMES[i]: i-3 for i in range(3, len(USECOLS))}
 COLS_IND_ARR = np.array(list(USECOLS.items()))
-COLS_IND_ARR[:, 0] = COLS_IND_ARR[:, 0].astype(np.int) - 1
+COLS_IND_ARR[:, 0] = COLS_IND_ARR[:, 0].astype(int) - 1
 
 ##############################################
 # read the command line
@@ -89,7 +90,7 @@ def readData(inName, listName):
 
 def readScan(inName, position=False):
     cols = COLS_IND_ARR[:, 1]
-    usecols = COLS_IND_ARR[:, 0].astype(np.int)
+    usecols = COLS_IND_ARR[:, 0].astype(int)
     if position is False:
         cols = cols[3:]
         usecols = usecols[3:]
@@ -133,27 +134,29 @@ def mask_by(data, var, minGap):
     mask = np.repeat(mask, data.shape[1], axis=1)  # Repeat mask for all vars
     return np.ma.masked_array(data, mask)
 
+def safe_average(values, weights, axis):
+    """Weighted average that returns masked values where all weights are zero."""
+    return np.ma.average(values, weights=weights, axis=axis)
+
+
 def combineData(pos, data, minGap):
     result = pos
 
     data_mask = mask_by(data, "gapTo", minGap)
 
     gapTo = data_mask[:, COLS_IND["gapTo"], :]  # Alias for gapTo var
-    result["4_mGapTo"] = np.average(
+    result["4_mGapTo"] = safe_average(
         gapTo, weights=gapTo, axis=1).filled(-1)
     result["5_maxGapTo"] = np.max(gapTo, axis=1).filled(-1)
-    result["6_mGapIn"] = np.average(
+    result["6_mGapIn"] = safe_average(
         data_mask[:, COLS_IND["gapIn"], :], weights=gapTo, axis=1).filled(-1)
-    result["7_mPAIb"] = np.average(
+    result["7_mPAIb"] = safe_average(
         data_mask[:, COLS_IND["PAIb"], :], weights=gapTo, axis=1).filled(-1)
-    result["8_mPAIrad"] = np.average(
+    result["8_mPAIrad"] = safe_average(
         data_mask[:, COLS_IND["PAIrad"], :], weights=gapTo, axis=1).filled(-1)
     result["9_totBeam"] = np.sum(
         data_mask[:, COLS_IND["nBeam"], :], axis=1).filled(0).astype(np.uint32)
 
-    # fit a function for waveform based PAI
-    # gapTo[i,useInd],meanRefl[i,useInd],meanZen[i,useInd])
-    # mPAIw = self.fitLAD(i, useInd)
     # Beland's maximum visibility PAI
     gap_to_max_ind = np.argmax(gapTo, axis=1)
     row_sequence = np.arange(data_mask.shape[0])
@@ -164,14 +167,14 @@ def combineData(pos, data, minGap):
         / \
         data_mask[row_sequence, COLS_IND["volTrans"], gap_to_max_ind]
     result["12_maxVolTrans"] = np.max(data_mask[:, COLS_IND["volTrans"], :], axis=1).filled(-1)
-    
+
     data_mask = mask_by(data, "volTrans", minGap)
-    result["13_mPAIb_volTrans"] = np.average(
+    result["13_mPAIb_volTrans"] = safe_average(
         data_mask[:, COLS_IND["PAIb"], :],
         weights=data_mask[:, COLS_IND["volTrans"], :],
         axis=1).filled(-1)
     data_mask = mask_by(data, "nBeam", minGap)
-    result["14_mPAIb_nBeams"] = np.average(
+    result["14_mPAIb_nBeams"] = safe_average(
         data_mask[:, COLS_IND["PAIb"], :],
         weights=data_mask[:, COLS_IND["nBeam"], :],
         axis=1).filled(-1)
