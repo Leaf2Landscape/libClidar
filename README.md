@@ -64,6 +64,22 @@ The container sets these automatically. If building outside the container, you m
 | `HDF5_LIB` | Path to HDF5 installation |
 | `RiVLib_DIR` | Path to RiVLib (for readRXP) |
 
+## Standalone Docker image
+
+A multi-stage `Dockerfile` builds all tools and produces a minimal runtime image (~2.2 GB) with every binary on `PATH`.
+
+```bash
+# Build (requires riegl_libs/ in the repo root)
+docker build -t libclidar .
+
+# Run interactively with data mounted
+docker run --rm -it -v /path/to/scans:/data libclidar
+
+# Run a single command
+docker run --rm -v /path/to/scans:/data libclidar -c \
+  "readRXP -input /data/scan.rxp -output /data/scan.bin -trans /data/scan.DAT"
+```
+
 ## Example: TLS voxelisation pipeline
 
 ```bash
